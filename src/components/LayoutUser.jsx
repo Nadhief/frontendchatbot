@@ -93,7 +93,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
     try {
       console.log("Confirmed delete:", selectedHistoryName);
 
-      await axios.delete(`http://localhost:5000/history/${selectedHistoryId}`);
+      await api.delete(`/history/${selectedHistoryId}`);
 
       setHistoryData((prev) =>
         prev.filter((item) => item.id !== selectedHistoryId)
@@ -117,12 +117,9 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
 
   const handleRenameSubmit = async () => {
     try {
-      await axios.patch(
-        `http://localhost:5000/chat/history/${selectedHistoryId}/rename`,
-        {
-          newTitle: newName,
-        }
-      );
+      await api.patch(`/chat/history/${selectedHistoryId}/rename`, {
+        newTitle: newName,
+      });
 
       if (onNewHistory?.current) onNewHistory.current();
 
@@ -164,9 +161,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
 
     const fetchMessageByHistoryId = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/history/${selectedHistoryId}/messages`
-        );
+        const res = await api.get(`/history/${selectedHistoryId}/messages`);
         const data = await res.json();
         localStorage.setItem("historyMessage", JSON.stringify(data));
         setHistoryMessage(data);
@@ -229,7 +224,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
         {historyData?.map((item, index) => (
           <ListItem
             key={index}
-            selected={item.id === selectedHistoryId}
+            selected={item?.id === selectedHistoryId}
             onClick={() => {
               console.log("kocak");
               setSelectedHistoryId(item.id);

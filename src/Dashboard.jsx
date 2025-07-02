@@ -16,6 +16,7 @@ import {
 import ChatbotImage from "./assets/Chatbot.png";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ReactMarkdown from "react-markdown";
+import api from "./services/api.js"; // Import API service
 
 const Dashboard = () => {
   const [responses, setResponses] = useState(() => {
@@ -88,7 +89,7 @@ const Dashboard = () => {
       let currentHistoryId = historyId;
 
       // 1. Kirim pertanyaan ke backend Flask
-      const res = await axios.post("http://localhost:5001/api/chat", {
+      const res = await axios.post("https://chatbotskripsi.site/model/api/chat", {
         text: userInput,
       });
 
@@ -103,14 +104,11 @@ const Dashboard = () => {
 
       // 2. Buat chat history jika belum ada
       if (historyId === 0) {
-        const resHistory = await axios.post(
-          "http://localhost:5000/chat/history/start",
-          {
-            userId,
-            title: userInput.slice(0, 50) || "Percakapan baru",
-            penyakit: diagnosis,
-          }
-        );
+        const resHistory = await api.post("/chat/history/start", {
+          userId,
+          title: userInput.slice(0, 50) || "Percakapan baru",
+          penyakit: diagnosis,
+        });
         currentHistoryId = resHistory.data.historyId;
         setHistoryId(currentHistoryId);
         localStorage.setItem("selectedHistoryId", currentHistoryId);
@@ -120,32 +118,26 @@ const Dashboard = () => {
       if (onNewHistory.current) onNewHistory.current(); // Refresh list history
 
       // 3. Simpan pesan user dan ambil messageId
-      const userMessageRes = await axios.post(
-        "http://localhost:5000/chat/history/message",
-        {
-          chatHistoryId: currentHistoryId,
-          sender: "user",
-          message: userInput,
-        }
-      );
+      const userMessageRes = await api.post("/chat/history/message", {
+        chatHistoryId: currentHistoryId,
+        sender: "user",
+        message: userInput,
+      });
       const messageId = userMessageRes.data.id;
 
       // 4. Simpan pesan bot
-      await axios.post("http://localhost:5000/chat/history/message", {
+      await api.post("/chat/history/message", {
         chatHistoryId: currentHistoryId,
         sender: "bot",
         message: botReply,
       });
 
       // 5. Simpan diagnosis log (pakai messageId)
-      await axios.post(
-        `http://localhost:5000/chat/history/${currentHistoryId}/diagnosis`,
-        {
-          messageId,
-          penyakit: diagnosis,
-          subtopik,
-        }
-      );
+      await api.post(`/chat/history/${currentHistoryId}/diagnosis`, {
+        messageId,
+        penyakit: diagnosis,
+        subtopik,
+      });
 
       // 4. Tampilkan balasan bot
       setResponses((prev) => [...prev, { from: "bot", text: botReply }]);
@@ -168,21 +160,16 @@ const Dashboard = () => {
 
     // Simulasi pesan user
     const fakeUserInput = "buatkan saya rekam medis";
-    const userMessageRes = await axios.post(
-      "http://localhost:5000/chat/history/message",
-      {
-        chatHistoryId: historyId,
-        sender: "user",
-        message: fakeUserInput,
-      }
-    );
+    const userMessageRes = await api.post("/chat/history/message", {
+      chatHistoryId: historyId,
+      sender: "user",
+      message: fakeUserInput,
+    });
     setResponses((prev) => [...prev, { from: "user", text: fakeUserInput }]);
 
     try {
       // Ambil diagnosis logs
-      const res = await axios.get(
-        `http://localhost:5000/chat/history/${historyId}/diagnosis`
-      );
+      const res = await api.get(`/chat/history/${historyId}/diagnosis`);
       const logs = res.data;
       console.log(logs);
 
@@ -207,24 +194,21 @@ const Dashboard = () => {
         .join("\n\n");
       console.log(paragraph);
 
-      await axios.post("http://localhost:5000/chat/history/message", {
+      await api.post("/chat/history/message", {
         chatHistoryId: historyId,
         sender: "bot",
         message: paragraph,
       });
 
       // (Opsional) Kirim ke endpoint untuk generate PDF
-      const pdfRes = await axios.post(
-        "http://localhost:5000/chat/history/pdf",
-        {
-          historyId: historyId, // atau cukup { historyId } jika variabel sama
-          diagnosisLogs: paragraph,
-        }
-      );
+      const pdfRes = await api.post("/chat/history/pdf", {
+        historyId: historyId, // atau cukup { historyId } jika variabel sama
+        diagnosisLogs: paragraph,
+      });
 
       const pdfUrl = pdfRes.data.url;
       console.log(pdfUrl);
-      window.open(`http://localhost:5000${pdfUrl}`, "_blank");
+      window.open(`https://chatbotskripsi.site/api${pdfUrl}`, "_blank");
 
       // Tampilkan hasil ke UI chat
       setResponses((prev) => [
