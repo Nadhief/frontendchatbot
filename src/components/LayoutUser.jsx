@@ -226,7 +226,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
         </Typography>
       </Box>
       <List>
-        {historyData.map((item, index) => (
+        {historyData?.map((item, index) => (
           <ListItem
             key={index}
             selected={item.id === selectedHistoryId}
