@@ -216,7 +216,7 @@ const Dashboard = () => {
         {
           from: "bot",
           // text: `${paragraph}\n\n)`,
-          text: `${paragraph}\n\n📄 Rekam medis ini juga tersedia dalam bentuk PDF: [Download PDF](/api/${pdfUrl})`,
+          text: `${paragraph}\n\n📄 Rekam medis ini juga tersedia dalam bentuk PDF: [Download PDF](/api${pdfUrl})`,
         },
       ]);
     } catch (err) {
