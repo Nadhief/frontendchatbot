@@ -335,7 +335,7 @@ const Dashboard = () => {
 
       {/* Chat History */}
       <Stack spacing={2} sx={{ my: 4, px: 2, mx: "auto" }} width={"70%"}>
-        {responses.map((msg, idx) => (
+        {responses?.map((msg, idx) => (
           <Paper
             key={idx}
             elevation={1}
