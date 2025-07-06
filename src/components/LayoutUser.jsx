@@ -162,7 +162,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
     const fetchMessageByHistoryId = async () => {
       try {
         const res = await api.get(`/history/${selectedHistoryId}/messages`);
-        const data = await res.json();
+        const data = res.data;
         localStorage.setItem("historyMessage", JSON.stringify(data));
         setHistoryMessage(data);
       } catch (error) {
