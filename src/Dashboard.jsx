@@ -88,13 +88,13 @@ const Dashboard = () => {
       let currentHistoryId = historyId;
 
       // 1. Kirim pertanyaan ke backend Flask
-      // const res = await axios.post("https://chatbotskripsi.site/model/api/chat", {
-      //   text: userInput,
-      // });
-
-      const res = await axios.post("http://127.0.0.1:5001/api/chat", {
+      const res = await axios.post("https://chatbotskripsi.site/model/api/chat", {
         text: userInput,
       });
+
+      // const res = await axios.post("http://127.0.0.1:5001/api/chat", {
+      //   text: userInput,
+      // });
       const botReply = res.data.message;
       const diagnosis = res.data.diagnosis;
       const subtopik = res.data.subtopik;
