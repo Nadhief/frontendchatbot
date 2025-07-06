@@ -49,7 +49,6 @@ const Dashboard = () => {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const userId = localStorage.getItem("userId") || 0;
-  console.log("User ID:", userId);
   const [historyId, setHistoryId] = useState(() => {
     const saved = localStorage.getItem("selectedHistoryId");
     if (!saved) {
@@ -89,10 +88,13 @@ const Dashboard = () => {
       let currentHistoryId = historyId;
 
       // 1. Kirim pertanyaan ke backend Flask
-      const res = await axios.post("https://chatbotskripsi.site/model/api/chat", {
+      // const res = await axios.post("https://chatbotskripsi.site/model/api/chat", {
+      //   text: userInput,
+      // });
+
+      const res = await axios.post("http://127.0.0.1:5001/api/chat", {
         text: userInput,
       });
-
       const botReply = res.data.message;
       const diagnosis = res.data.diagnosis;
       const subtopik = res.data.subtopik;
@@ -171,7 +173,6 @@ const Dashboard = () => {
       // Ambil diagnosis logs
       const res = await api.get(`/chat/history/${historyId}/diagnosis`);
       const logs = res.data;
-      console.log(logs);
 
       if (logs.length === 0) {
         setResponses((prev) => [
@@ -192,7 +193,6 @@ const Dashboard = () => {
           )}** dengan fokus subtopik **${log.subtopik}**.`;
         })
         .join("\n\n");
-      console.log(paragraph);
 
       await api.post("/chat/history/message", {
         chatHistoryId: historyId,
@@ -207,7 +207,6 @@ const Dashboard = () => {
       });
 
       const pdfUrl = pdfRes.data.url;
-      console.log(pdfUrl);
       window.open(`https://chatbotskripsi.site/api${pdfUrl}`, "_blank");
 
       // Tampilkan hasil ke UI chat

@@ -91,7 +91,6 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
 
   const handleConfirmDelete = async () => {
     try {
-      console.log("Confirmed delete:", selectedHistoryName);
 
       await api.delete(`/history/${selectedHistoryId}`);
 
@@ -226,8 +225,7 @@ function LayoutUser({ window, children, onNewHistory, userId }) {
             key={index}
             selected={item?.id === selectedHistoryId}
             onClick={() => {
-              console.log("kocak");
-              setSelectedHistoryId(item.id);
+               setSelectedHistoryId(item.id);
               setSelectedHistoryName(item.title);
               localStorage.setItem("selectedHistoryId", item.id);
               localStorage.setItem("selectedHistoryName", item.title);
